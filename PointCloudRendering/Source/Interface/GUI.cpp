@@ -29,6 +29,7 @@ void GUI::createMenu()
 	if (_showControls)				showControls();
 	if (_showFileDialog)			showFileDialog();
 	if (_showPointCloudDialog)		showPointCloudDialog();
+	if (_showCameraParameters)      showCameraParameters();
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -37,6 +38,7 @@ void GUI::createMenu()
 			ImGui::MenuItem(ICON_FA_CUBE "Rendering", NULL, &_showRenderingSettings);
 			ImGui::MenuItem(ICON_FA_IMAGE "Screenshot", NULL, &_showScreenshotSettings);
 			ImGui::MenuItem(ICON_FA_SAVE "Open Point Cloud", NULL, &_showFileDialog);
+			ImGui::MenuItem(ICON_FA_CAMERA "Camera parameters", NULL, &_showCameraParameters);
 			ImGui::EndMenu();
 		}
 
@@ -290,6 +292,30 @@ void GUI::showScreenshotSettings()
 
 		ImGui::PopStyleColor(3);
 		ImGui::PopID();
+	}
+
+	ImGui::End();
+}
+
+void GUI::showCameraParameters() {
+	if (ImGui::Begin("Camera Parameters", &_showCameraParameters))
+	{
+		const int NUM_MOVEMENTS = 11;
+		const char* parameter[] = { "MOVEMENT MULTIPLIER", "MOVEMENT SPEED UP", "BOOM", "CRANE", "DOLLY", "ORBIT_XZ", "ORBIT_Y", "PAN", "TILT", "TRUCK", "ZOOM"};
+
+		ImGui::Text(parameter[0]);
+		ImGui::InputFloat("", InputManager::getInstance()->getMovementMultiplier(), 0.1f, 1.0f);
+		ImGui::Text(parameter[1]); 
+		ImGui::InputFloat("", InputManager::getInstance()->getMovementSpeedUp(), 0.1f, 1.0f);
+
+		for (int i = 2; i < NUM_MOVEMENTS; i++)
+		{
+			ImGui::Text(parameter[i]); 
+			ImGui::InputFloat("", InputManager::getInstance()->getSpeedValue(i-2), 0.1f, 1.0f);
+		}
+
+		ImGui::Columns(1);
+		ImGui::Separator();
 	}
 
 	ImGui::End();

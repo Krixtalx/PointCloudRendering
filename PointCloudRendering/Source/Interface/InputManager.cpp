@@ -10,11 +10,11 @@
 
 // [Static members initialization]
 
-const std::vector<float> InputManager::MOVEMENT_SPEED = getMovementSpeed();
+std::vector<float> InputManager::MOVEMENT_SPEED = getMovementSpeed();
 
 const vec2	InputManager::CURSOR_POS = vec2(-1.0f, -1.0f);					//!< Default cursor position, just to be ignored
-const float InputManager::MOVEMENT_MULTIPLIER = 0.1f;					
-const float InputManager::MOVEMENT_SPEED_UP = 1.0f;						
+float InputManager::MOVEMENT_MULTIPLIER = 0.25f;
+float InputManager::MOVEMENT_SPEED_UP = 1.0f;
 
 const int InputManager::BOOM_KEY = GLFW_KEY_UP;
 const int InputManager::CRANE_KEY = GLFW_KEY_DOWN;
@@ -45,9 +45,9 @@ bool InputManager::checkPanTilt(const float xPos, const float yPos)
 
 	_leftClickPressed &= glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 	_rightClickPressed &= glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
-	
+
 	if (_leftClickPressed || _rightClickPressed)
-	{	
+	{
 		if (_lastCursorPosition.x >= 0.0f)						// Any displacement?
 		{
 			if (!BasicOperations::equal(xPos, _lastCursorPosition.x))
@@ -73,26 +73,26 @@ std::vector<float> InputManager::getMovementSpeed()
 {
 	std::vector<float> movSpeed(NUM_MOVEMENT_TYPES);
 
-	movSpeed[BOOM]		= 0.1f;
-	movSpeed[CRANE]		= 0.1f;
-	movSpeed[DOLLY]		= 0.08f;
-	movSpeed[ORBIT_XZ]	= 0.05f;
-	movSpeed[ORBIT_Y]	= 0.03f;
-	movSpeed[PAN]		= 0.002f;
-	movSpeed[TILT]		= 0.002f;
-	movSpeed[TRUCK]		= 0.01f;
-	movSpeed[ZOOM]		= 0.008f;
+	movSpeed[BOOM] = 0.1f;
+	movSpeed[CRANE] = 0.1f;
+	movSpeed[DOLLY] = 0.08f;
+	movSpeed[ORBIT_XZ] = 0.05f;
+	movSpeed[ORBIT_Y] = 0.03f;
+	movSpeed[PAN] = 0.002f;
+	movSpeed[TILT] = 0.002f;
+	movSpeed[TRUCK] = 0.01f;
+	movSpeed[ZOOM] = 0.008f;
 
 	return movSpeed;
 }
 
 bool InputManager::processPressedKeyEvent(const int key, const int mods)
 {
-	bool repaint					= true;
-	Renderer* renderer				= Renderer::getInstance();
-	Camera* camera					= renderer->getActiveCamera();
+	bool repaint = true;
+	Renderer* renderer = Renderer::getInstance();
+	Camera* camera = renderer->getActiveCamera();
 	RenderingParameters* rendParams = renderer->getRenderingParameters();
-	InputManager* inputManager		= InputManager::getInstance();
+	InputManager* inputManager = InputManager::getInstance();
 
 	switch (key)
 	{
@@ -175,13 +175,13 @@ bool InputManager::processPressedKeyEvent(const int key, const int mods)
 	};
 
 	{
-		switch(key)
+		switch (key)
 		{
 		case InputManager::SCREENSHOT_KEY:
 			renderer->getScreenshot(rendParams->_screenshotFilenameBuffer);
 
 			break;
-			
+
 		default:
 			repaint = false;
 		};
@@ -281,7 +281,7 @@ void InputManager::mouseScrollEvent(GLFWwindow* window, double xoffset, double y
 void InputManager::resizeEvent(GLFWwindow* window, int width, int height)
 {
 	if (width == 0 || height == 0) return;
-	
+
 	InputManager* inputManager = InputManager::getInstance();
 	Window::getInstance()->changedSize(width, height);
 	Renderer::getInstance()->resize(width, height);
@@ -293,4 +293,19 @@ void InputManager::windowRefresh(GLFWwindow* window)
 	GUI::getInstance()->render();
 
 	glfwSwapBuffers(window);
+}
+
+float* InputManager::getMovementMultiplier()
+{
+	return &MOVEMENT_MULTIPLIER;
+}
+
+float* InputManager::getMovementSpeedUp()
+{
+	return &MOVEMENT_SPEED_UP;
+}
+
+float* InputManager::getSpeedValue(int element)
+{
+	return &MOVEMENT_SPEED[element];
 }

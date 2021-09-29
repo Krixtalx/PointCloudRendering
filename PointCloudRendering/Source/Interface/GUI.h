@@ -36,6 +36,7 @@ protected:
 	bool							_showPointCloudDialog;				//!< 
 	bool							_showRenderingSettings;				//!< Displays a window which allows the user to modify the rendering parameters
 	bool							_showScreenshotSettings;			//!< Shows a window which allows to take an screenshot at any size
+	bool							_showCameraParameters;
 
 protected:
 	/**
@@ -97,6 +98,11 @@ protected:
 	*	@brief Shows a window with framebuffer and screenshot configuration.
 	*/
 	void showScreenshotSettings();
+
+	/**
+	*   @brief Shows a window with the camera current parameters.
+	*/
+	void showCameraParameters();
 
 public:
 	/**

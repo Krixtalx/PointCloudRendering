@@ -28,11 +28,11 @@ protected:
 
 protected:
 	// [Movements constraints]
-	static const std::vector<float> MOVEMENT_SPEED;						//!< Movement speed for each type of movement
+	static std::vector<float> MOVEMENT_SPEED;						//!< Movement speed for each type of movement
 
 	static const vec2				CURSOR_POS;							//!< Default cursor position, just to be ignored
-	static const float				MOVEMENT_MULTIPLIER;				//!< Multiplier for default dolly speed after each movement
-	static const float				MOVEMENT_SPEED_UP;					//!< Multiplicator for general dolly speed as another key is pressed
+	static float					MOVEMENT_MULTIPLIER;				//!< Multiplier for default dolly speed after each movement
+	static float					MOVEMENT_SPEED_UP;					//!< Multiplicator for general dolly speed as another key is pressed
 
 	// [Keys constraints]
 	static const int				BOOM_KEY;
@@ -144,5 +144,9 @@ public:
 	static void windowRefresh(GLFWwindow* window);
 
 	// [Getter & Setter]
+	static float* getMovementMultiplier();
+	static float* getMovementSpeedUp();
+	static float* getSpeedValue(int element);
+
 };
 
