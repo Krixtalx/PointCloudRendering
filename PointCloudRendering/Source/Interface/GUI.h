@@ -128,5 +128,6 @@ public:
 	*	@return  
 	*/
 	bool isMouseActive() { return ImGui::GetIO().WantCaptureMouse; }
+
 };
 

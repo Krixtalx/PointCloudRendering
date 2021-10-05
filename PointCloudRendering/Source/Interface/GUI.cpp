@@ -7,6 +7,8 @@
 #include "Interface/Fonts/lato.hpp"
 #include "Interface/Fonts/IconsFontAwesome5.h"
 #include "imfiledialog/ImGuiFileDialog.h"
+#include  <glm/gtx/io.hpp>
+
 
 /// [Protected methods]
 
@@ -169,6 +171,7 @@ void GUI::showPointCloudDialog()
 		{
 			_pointCloudScene->loadPointCloud(_pointCloudPath);
 			_showPointCloudDialog = false;
+			*(InputManager::getInstance()->getMovementMultiplier()) = distance(_pointCloudScene->getAABB().min(), _pointCloudScene->getAABB().max())/1000;
 		}
 
 		ImGui::PopStyleColor(3);
@@ -302,16 +305,18 @@ void GUI::showCameraParameters() {
 	{
 		const int NUM_MOVEMENTS = 11;
 		const char* parameter[] = { "MOVEMENT MULTIPLIER", "MOVEMENT SPEED UP", "BOOM", "CRANE", "DOLLY", "ORBIT_XZ", "ORBIT_Y", "PAN", "TILT", "TRUCK", "ZOOM"};
+		ImGui::Columns(2, "ControlColumns"); // 4-ways, with border
+		ImGui::Separator();
 
-		ImGui::Text(parameter[0]);
-		ImGui::InputFloat("", InputManager::getInstance()->getMovementMultiplier(), 0.1f, 1.0f);
-		ImGui::Text(parameter[1]); 
-		ImGui::InputFloat("", InputManager::getInstance()->getMovementSpeedUp(), 0.1f, 1.0f);
+		ImGui::Text(parameter[0]); ImGui::NextColumn();
+		ImGui::InputFloat("", InputManager::getInstance()->getMovementMultiplier(), 0.1f, 1.0f); ImGui::NextColumn();
+		ImGui::Text(parameter[1]); ImGui::NextColumn();
+		ImGui::Text("%f", *(InputManager::getInstance()->getMovementSpeedUp())); ImGui::NextColumn();
 
 		for (int i = 2; i < NUM_MOVEMENTS; i++)
 		{
-			ImGui::Text(parameter[i]); 
-			ImGui::InputFloat("", InputManager::getInstance()->getSpeedValue(i-2), 0.1f, 1.0f);
+			ImGui::Text(parameter[i]); ImGui::NextColumn();
+			ImGui::Text("%f", *(InputManager::getInstance()->getSpeedValue(i-2))); ImGui::NextColumn();
 		}
 
 		ImGui::Columns(1);
@@ -345,15 +350,9 @@ void GUI::initialize(GLFWwindow* window, const int openGLMinorVersion)
 
 void GUI::render()
 {
-	bool show_demo_window = true;
-
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	//if (show_demo_window)
-	//	ImGui::ShowDemoWindow(&show_demo_window);
 
 	this->createMenu();
 
