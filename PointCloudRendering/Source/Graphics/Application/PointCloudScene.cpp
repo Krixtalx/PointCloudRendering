@@ -58,6 +58,11 @@ void PointCloudScene::render(const mat4& mModel, RenderingParameters* rendParams
 	this->renderPointCloud(mModel, rendParams);
 }
 
+AABB PointCloudScene::getAABB()
+{
+	return _pointCloud->getAABB();
+}
+
 // [Protected methods]
 
 void PointCloudScene::drawAsPoints(const mat4& mModel, RenderingParameters* rendParams)

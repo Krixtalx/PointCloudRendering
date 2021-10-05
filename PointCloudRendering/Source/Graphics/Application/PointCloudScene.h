@@ -95,5 +95,8 @@ public:
 	*	@param rendParams Rendering parameters to be taken into account.
 	*/
 	virtual void render(const mat4& mModel, RenderingParameters* rendParams);
+
+
+	AABB getAABB();
 };
 
