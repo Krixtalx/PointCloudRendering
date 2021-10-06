@@ -47,6 +47,28 @@ std::vector<AABB> AABB::split(const unsigned edgeDivisions) const
 	return aabb;
 }
 
+std::vector<AABB> AABB::split(const unsigned xEdgeDivisions, const unsigned yEdgeDivisions, const unsigned zEdgeDivisions) const
+{
+	std::vector<AABB> aabb;
+	const float xSize = (_max.x - _min.x) / xEdgeDivisions, ySize = (_max.y - _min.y) / yEdgeDivisions, zSize = (_max.z - _min.z) / zEdgeDivisions;
+
+	for (unsigned x = 0; x < xEdgeDivisions; ++x)
+	{
+		for (unsigned y = 0; y < yEdgeDivisions; ++y)
+		{
+			for (unsigned z = 0; z < zEdgeDivisions; ++z)
+			{
+				const vec3 min(_min.x + xSize * x, _min.y + ySize * y, _min.z + zSize * z);
+				const vec3 max(_min.x + xSize * (x + 1), _min.y + ySize * (y + 1), _min.z + zSize * (z + 1));
+
+				aabb.push_back(AABB(min, max));
+			}
+		}
+	}
+
+	return aabb;
+}
+
 void AABB::update(const AABB& aabb)
 {
 	this->update(aabb.max());

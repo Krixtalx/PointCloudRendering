@@ -380,7 +380,7 @@ void Model3D::setShaderUniforms(ShaderProgram* shader, const RendEnum::RendShade
 		break;
 
 	case RendEnum::WIREFRAME_SHADER:
-		shader->setUniform("mModelViewProj", matrix[RendEnum::VIEW_PROJ_MATRIX] * matrix[RendEnum::MODEL_MATRIX]);
+		shader->setUniform("mModelViewProj", matrix[RendEnum::VIEW_PROJ_MATRIX] * matrix[RendEnum::MODEL_MATRIX] * _modelMatrix);
 		shader->setUniform("vColor", rendParams->_wireframeColor);
 
 		break;

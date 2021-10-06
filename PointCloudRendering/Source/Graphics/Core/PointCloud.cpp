@@ -46,6 +46,7 @@ bool PointCloud::load(const mat4& modelMatrix)
 
 		_loaded = true;
 		
+		this->setVAOData();
 		return true;
 	}
 
@@ -195,6 +196,7 @@ void PointCloud::setVAOData()
 	vao->setVBOData(RendEnum::VBO_POSITION, _points, GL_STATIC_DRAW);
 	vao->setIBOData(RendEnum::IBO_POINT_CLOUD, modelComp->_pointCloud);
 	modelComp->_topologyIndicesLength[RendEnum::IBO_POINT_CLOUD] = unsigned(modelComp->_pointCloud.size());
+	modelComp->_vao = vao;
 }
 
 void PointCloud::threadedWritePointCloud(const std::string& filename, const bool ascii)

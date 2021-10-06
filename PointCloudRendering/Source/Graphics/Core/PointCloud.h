@@ -134,5 +134,7 @@ public:
 	*	@return
 	*/
 	std::vector<PointModel>* getPoints() { return &_points; }
+
+	
 };
 

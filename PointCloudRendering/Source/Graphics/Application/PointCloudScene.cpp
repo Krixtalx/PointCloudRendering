@@ -7,6 +7,7 @@
 #include "Graphics/Core/CADModel.h"
 #include "Graphics/Core/Light.h"
 #include "Graphics/Core/OpenGLUtilities.h"
+#include "../../../ProceduralGenerator.h"
 
 /// Initialization of static attributes
 const std::string PointCloudScene::SCENE_CAMERA_FILE = "Camera.txt";
@@ -41,7 +42,11 @@ bool PointCloudScene::loadPointCloud(const std::string& path)
 	if (nullPointCloud) this->loadDefaultCamera(_cameraManager->getActiveCamera());
 
 	std::cout << _pointCloud->getNumberOfPoints() << std::endl;
-
+	
+	
+	this->_sceneGroup->addComponent(_pointCloud);
+	ProceduralGenerator::getInstance()->setCurrentCloudScene(this);
+	
 	return true;
 }
 
@@ -55,7 +60,9 @@ void PointCloudScene::modifySize(const uint16_t width, const uint16_t height)
 void PointCloudScene::render(const mat4& mModel, RenderingParameters* rendParams)
 {
 	this->bindDefaultFramebuffer(rendParams);	
-	this->renderPointCloud(mModel, rendParams);
+	//this->renderPointCloud(mModel, rendParams);
+	this->drawAsPoints(mModel, rendParams);
+	this->renderWireframe(mModel, rendParams);
 }
 
 AABB PointCloudScene::getAABB()
@@ -65,19 +72,19 @@ AABB PointCloudScene::getAABB()
 
 // [Protected methods]
 
-void PointCloudScene::drawAsPoints(const mat4& mModel, RenderingParameters* rendParams)
-{
-	Camera* activeCamera		= _cameraManager->getActiveCamera();
-	const mat4 projectionMatrix = activeCamera->getViewProjMatrix() * mModel;
-
-	_pointCloudAggregator->render(projectionMatrix);
-
-	_quadRenderer->use();
-	_quadRenderer->applyActiveSubroutines();
-	this->bindTexture(_pointCloudAggregator->getTexture(), _quadRenderer, "texSampler", 0);
-
-	_quadVAO->drawObject(RendEnum::IBO_TRIANGLE_MESH, GL_TRIANGLES, 2 * 4);
-}
+//void PointCloudScene::drawAsPoints(const mat4& mModel, RenderingParameters* rendParams)
+//{
+//	Camera* activeCamera		= _cameraManager->getActiveCamera();
+//	const mat4 projectionMatrix = activeCamera->getViewProjMatrix() * mModel;
+//
+//	_pointCloudAggregator->render(projectionMatrix);
+//
+//	_quadRenderer->use();
+//	_quadRenderer->applyActiveSubroutines();
+//	this->bindTexture(_pointCloudAggregator->getTexture(), _quadRenderer, "texSampler", 0);
+//
+//	_quadVAO->drawObject(RendEnum::IBO_TRIANGLE_MESH, GL_TRIANGLES, 2 * 4);
+//}
 
 void PointCloudScene::loadDefaultCamera(Camera* camera)
 {

@@ -540,6 +540,9 @@
     <ClInclude Include="Source\Graphics\Application\PointCloudParameters.h">
       <Filter>Archivos de encabezado\Graphics\Application</Filter>
     </ClInclude>
+    <ClInclude Include="ProceduralGenerator.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Geometry\2D\Vector2.cpp">
@@ -775,6 +778,9 @@
     </ClCompile>
     <ClCompile Include="Libraries\imfiledialog\ImGuiFileDialog.cpp">
       <Filter>Archivos de origen\ImportedLibraries\imfiledialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ProceduralGenerator.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

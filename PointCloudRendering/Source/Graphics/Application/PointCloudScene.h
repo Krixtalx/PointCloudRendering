@@ -18,6 +18,8 @@
 */
 class PointCloudScene: public SSAOScene
 {
+
+	friend class ProceduralGenerator;
 protected:
 	// Settings constraints
 	const static std::string SCENE_CAMERA_FILE;				//!<
@@ -64,7 +66,8 @@ protected:
 	*	@param mModel Additional model matrix to be applied over the initial model matrix.
 	*	@param rendParams Rendering parameters to be taken into account.
 	*/
-	virtual void drawAsPoints(const mat4& mModel, RenderingParameters* rendParams);
+	//virtual void drawAsPoints(const mat4& mModel, RenderingParameters* rendParams);
+
 
 public:
 	/**
