@@ -1,8 +1,9 @@
 #version 450
 
-uniform vec3 vColor;
+//uniform vec3 vColor;
 
-layout (location = 0) out vec4 fColor;
+in vec4 ourColor;
+out vec4 fColor;
 
 void main() {
 	// Rounded points
@@ -12,5 +13,5 @@ void main() {
 		discard;										// Discarded because distance to center is bigger than 0.5
 	}
 
-	fColor = vec4(vColor, 1.0f);
+	fColor = ourColor;
 }

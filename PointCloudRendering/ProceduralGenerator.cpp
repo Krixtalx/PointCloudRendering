@@ -51,5 +51,5 @@ void ProceduralGenerator::subdivideCloud()
 	vec3 size = _pointCloudScene->_pointCloud->getAABB().size();
 	AABB* aabb = new AABB(_pointCloudScene->_pointCloud->getAABB());
 	DrawAABB* test = new DrawAABB(aabb);
-	_pointCloudScene->_sceneGroup->addComponent(test);
+	//_pointCloudScene->_sceneGroup->addComponent(test);
 }

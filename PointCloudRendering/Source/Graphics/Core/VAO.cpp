@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "VAO.h"
+#include <Graphics/Core/PointCloud.h>
 
 /// [Public methods]
 
@@ -60,13 +61,23 @@ void VAO::drawObject(const GLuint openGLPrimitive, const GLuint numVertices, con
 	}
 }
 
+//void VAO::setVBOData(const std::vector<Model3D::VertexGPUData>& geometryData, const GLuint changeFrequency)
+//{
+//	glBindVertexArray(_vao);
+//
+//	{
+//		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
+//		glBufferData(GL_ARRAY_BUFFER, geometryData.size() * sizeof(Model3D::VertexGPUData), geometryData.data(), changeFrequency);
+//	}
+//}
+
 void VAO::setVBOData(const std::vector<Model3D::VertexGPUData>& geometryData, const GLuint changeFrequency)
 {
 	glBindVertexArray(_vao);
 
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
-		glBufferData(GL_ARRAY_BUFFER, geometryData.size() * sizeof(Model3D::VertexGPUData), geometryData.data(), changeFrequency);
+		glBufferData(GL_ARRAY_BUFFER, geometryData.size() * 2 * sizeof(vec3), geometryData.data(), changeFrequency);
 	}
 }
 
@@ -116,10 +127,38 @@ void VAO::declareInterleavedVBO(const RendEnum::VBOTypes vboType, const GLsizei 
 	}
 }
 
+//void VAO::genGPUGeometryVBO()
+//{
+//	size_t accumSize = 0;
+//	const size_t structSize = sizeof(Model3D::VertexGPUData);
+//
+//	// VBOs
+//	glGenBuffers(1, &_vbo[0]);
+//	glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
+//
+//	glEnableVertexAttribArray(0);
+//	glVertexAttribPointer(0, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr));
+//	accumSize += sizeof(vec4);
+//
+//	// Normals
+//	glEnableVertexAttribArray(1);
+//	glVertexAttribPointer(1, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr + accumSize));
+//	accumSize += sizeof(vec4);
+//
+//	// Texture coordinates
+//	glEnableVertexAttribArray(2);
+//	glVertexAttribPointer(2, sizeof(vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr + accumSize));
+//	accumSize += sizeof(vec4);
+//
+//	// Tangents
+//	glEnableVertexAttribArray(3);
+//	glVertexAttribPointer(3, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr + accumSize));
+//}
+
 void VAO::genGPUGeometryVBO()
 {
 	size_t accumSize = 0;
-	const size_t structSize = sizeof(Model3D::VertexGPUData);
+	const size_t structSize = sizeof(PointCloud::PointModel);
 
 	// VBOs
 	glGenBuffers(1, &_vbo[0]);
@@ -127,19 +166,10 @@ void VAO::genGPUGeometryVBO()
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr));
-	accumSize += sizeof(vec4);
+	accumSize += sizeof(vec3);
 
-	// Normals
+	// RGB
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr + accumSize));
-	accumSize += sizeof(vec4);
-
-	// Texture coordinates
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, sizeof(vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr + accumSize));
-	accumSize += sizeof(vec4);
-
-	// Tangents
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, structSize, ((GLubyte*)nullptr + accumSize));
+	accumSize += sizeof(vec3);
 }

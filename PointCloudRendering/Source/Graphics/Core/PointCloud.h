@@ -19,7 +19,7 @@ public:
 	struct PointModel
 	{
 		vec3		_point;
-		unsigned	_rgb;
+		vec3		_rgb;
 
 		/**
 		*	@return RGB color packed as a single unsigned value. 
@@ -29,12 +29,13 @@ public:
 		/**
 		*	@return RGB color packed as a single unsigned value.
 		*/
-		vec4 getRGBVec3() { return glm::unpackUnorm4x8(_rgb) * 255.0f; }
+		//vec4 getRGBVec3() { return glm::unpackUnorm4x8(_rgb) * 255.0f; }
 
 		/**
 		*	@brief Packs an RGB color into an unsigned value. 
 		*/
-		void saveRGB(const vec3& rgb) { _rgb = this->getRGBColor(rgb); }
+		//void saveRGB(const vec3& rgb) { _rgb = this->getRGBColor(rgb); }
+		void saveRGB(const vec3& rgb) { _rgb = rgb; }
 	};
 
 protected:

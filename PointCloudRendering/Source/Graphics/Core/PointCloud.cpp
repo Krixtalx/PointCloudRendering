@@ -12,7 +12,7 @@ const std::string	PointCloud::WRITE_POINT_CLOUD_FOLDER = "PointClouds/";
 
 /// Public methods
 
-PointCloud::PointCloud(const std::string& filename, const bool useBinary, const mat4& modelMatrix) : 
+PointCloud::PointCloud(const std::string& filename, const bool useBinary, const mat4& modelMatrix) :
 	Model3D(modelMatrix, 1), _filename(filename), _useBinary(useBinary)
 {
 }
@@ -45,7 +45,7 @@ bool PointCloud::load(const mat4& modelMatrix)
 		}
 
 		_loaded = true;
-		
+
 		this->setVAOData();
 		return true;
 	}
@@ -102,10 +102,10 @@ bool PointCloud::loadModelFromPLY(const mat4& modelMatrix)
 		file.parse_header(*fileStream);
 
 		try { plyPoints = file.request_properties_from_element("vertex", { "x", "y", "z" }); }
-		catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
-		
+		catch (const std::exception& e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
+
 		try { plyColors = file.request_properties_from_element("vertex", { "red", "green", "blue" }); }
-		catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
+		catch (const std::exception& e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
 		file.read(*fileStream);
 
@@ -130,7 +130,7 @@ bool PointCloud::loadModelFromPLY(const mat4& modelMatrix)
 				std::memcpy(pointsRawDouble, plyPoints->buffer.get(), numPointsBytes);
 			}
 			colorsRaw = new uint8_t[numColors * 3];
-			
+
 			std::memcpy(colorsRaw, plyColors->buffer.get(), numColorsBytes);
 
 			if (!isDouble)
@@ -139,8 +139,8 @@ bool PointCloud::loadModelFromPLY(const mat4& modelMatrix)
 				{
 					baseIndex = index * 3;
 
-					_points[index] = PointModel{ vec3(pointsRawFloat[baseIndex], pointsRawFloat[baseIndex + 1], pointsRawFloat[baseIndex + 2]),
-												 PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };
+					/*_points[index] = PointModel{ vec3(pointsRawFloat[baseIndex], pointsRawFloat[baseIndex + 1], pointsRawFloat[baseIndex + 2]),PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };*/
+					_points[index] = PointModel{ vec3(pointsRawFloat[baseIndex], pointsRawFloat[baseIndex + 1], pointsRawFloat[baseIndex + 2]),vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])};
 					_aabb.update(_points[index]._point);
 				}
 			}
@@ -150,14 +150,15 @@ bool PointCloud::loadModelFromPLY(const mat4& modelMatrix)
 				{
 					baseIndex = index * 3;
 
-					_points[index] = PointModel{ vec3(pointsRawDouble[baseIndex], pointsRawDouble[baseIndex + 1], pointsRawDouble[baseIndex + 2]),
-												 PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };
+					/*_points[index] = PointModel{ vec3(pointsRawDouble[baseIndex], pointsRawDouble[baseIndex + 1], pointsRawDouble[baseIndex + 2]),
+												 PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };*/
+					_points[index] = PointModel{ vec3(pointsRawDouble[baseIndex], pointsRawDouble[baseIndex + 1], pointsRawDouble[baseIndex + 2]),vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2]) };
 					_aabb.update(_points[index]._point);
 				}
 			}
 		}
 	}
-	catch (const std::exception & e)
+	catch (const std::exception& e)
 	{
 		std::cerr << "Caught tinyply exception: " << e.what() << std::endl;
 
@@ -194,6 +195,8 @@ void PointCloud::setVAOData()
 	unsigned startIndex = 0, size = modelComp->_pointCloud.size(), currentSize;
 
 	vao->setVBOData(RendEnum::VBO_POSITION, _points, GL_STATIC_DRAW);
+	modelComp->_pointCloud.resize(_points.size());
+	std::iota(modelComp->_pointCloud.begin(), modelComp->_pointCloud.end(), 0);
 	vao->setIBOData(RendEnum::IBO_POINT_CLOUD, modelComp->_pointCloud);
 	modelComp->_topologyIndicesLength[RendEnum::IBO_POINT_CLOUD] = unsigned(modelComp->_pointCloud.size());
 	modelComp->_vao = vao;
@@ -201,7 +204,7 @@ void PointCloud::setVAOData()
 
 void PointCloud::threadedWritePointCloud(const std::string& filename, const bool ascii)
 {
-	std::filebuf fileBuffer;					
+	std::filebuf fileBuffer;
 	fileBuffer.open(WRITE_POINT_CLOUD_FOLDER + filename, ascii ? std::ios::out : std::ios::out | std::ios::binary);
 
 	std::ostream outstream(&fileBuffer);
@@ -215,7 +218,8 @@ void PointCloud::threadedWritePointCloud(const std::string& filename, const bool
 	for (int pointIdx = 0; pointIdx < _points.size(); ++pointIdx)
 	{
 		position.push_back(_points[pointIdx]._point);
-		rgb.push_back(_points[pointIdx].getRGBVec3());
+		//rgb.push_back(_points[pointIdx].getRGBVec3());
+		rgb.push_back(_points[pointIdx]._rgb);
 	}
 
 	const std::string componentName = "pointCloud";
