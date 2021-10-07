@@ -139,8 +139,7 @@ bool PointCloud::loadModelFromPLY(const mat4& modelMatrix)
 				{
 					baseIndex = index * 3;
 
-					/*_points[index] = PointModel{ vec3(pointsRawFloat[baseIndex], pointsRawFloat[baseIndex + 1], pointsRawFloat[baseIndex + 2]),PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };*/
-					_points[index] = PointModel{ vec3(pointsRawFloat[baseIndex], pointsRawFloat[baseIndex + 1], pointsRawFloat[baseIndex + 2]),vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])};
+					_points[index] = PointModel{ vec3(pointsRawFloat[baseIndex], pointsRawFloat[baseIndex + 1], pointsRawFloat[baseIndex + 2]),PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };
 					_aabb.update(_points[index]._point);
 				}
 			}
@@ -150,9 +149,8 @@ bool PointCloud::loadModelFromPLY(const mat4& modelMatrix)
 				{
 					baseIndex = index * 3;
 
-					/*_points[index] = PointModel{ vec3(pointsRawDouble[baseIndex], pointsRawDouble[baseIndex + 1], pointsRawDouble[baseIndex + 2]),
-												 PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };*/
-					_points[index] = PointModel{ vec3(pointsRawDouble[baseIndex], pointsRawDouble[baseIndex + 1], pointsRawDouble[baseIndex + 2]),vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2]) };
+					_points[index] = PointModel{ vec3(pointsRawDouble[baseIndex], pointsRawDouble[baseIndex + 1], pointsRawDouble[baseIndex + 2]),
+												 PointModel::getRGBColor(vec3(colorsRaw[baseIndex], colorsRaw[baseIndex + 1], colorsRaw[baseIndex + 2])) };
 					_aabb.update(_points[index]._point);
 				}
 			}
@@ -195,6 +193,7 @@ void PointCloud::setVAOData()
 	unsigned startIndex = 0, size = modelComp->_pointCloud.size(), currentSize;
 
 	vao->setVBOData(RendEnum::VBO_POSITION, _points, GL_STATIC_DRAW);
+
 	modelComp->_pointCloud.resize(_points.size());
 	std::iota(modelComp->_pointCloud.begin(), modelComp->_pointCloud.end(), 0);
 	vao->setIBOData(RendEnum::IBO_POINT_CLOUD, modelComp->_pointCloud);
@@ -218,8 +217,7 @@ void PointCloud::threadedWritePointCloud(const std::string& filename, const bool
 	for (int pointIdx = 0; pointIdx < _points.size(); ++pointIdx)
 	{
 		position.push_back(_points[pointIdx]._point);
-		//rgb.push_back(_points[pointIdx].getRGBVec3());
-		rgb.push_back(_points[pointIdx]._rgb);
+		rgb.push_back(_points[pointIdx].getRGBVec3());
 	}
 
 	const std::string componentName = "pointCloud";
