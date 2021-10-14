@@ -31,7 +31,8 @@
     <ClInclude Include="Libraries\implot\implot.h" />
     <ClInclude Include="Libraries\implot\implot_internal.h" />
     <ClInclude Include="Libraries\lodepng\lodepng.h" />
-    <ClInclude Include="ProceduralGenerator.h" />
+    <ClInclude Include="Source\ProceduralUtils\ProceduralGenerator.h" />
+    <ClInclude Include="Source\ProceduralUtils\ProceduralVoxel.h" />
     <ClInclude Include="Source\Geometry\2D\Vector2.h" />
     <ClInclude Include="Source\Geometry\3D\AABB.h" />
     <ClInclude Include="Source\Geometry\3D\Edge3D.h" />
@@ -193,7 +194,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ProceduralGenerator.cpp" />
+    <ClCompile Include="Source\ProceduralUtils\ProceduralGenerator.cpp" />
+    <ClCompile Include="Source\ProceduralUtils\ProceduralVoxel.cpp" />
     <ClCompile Include="Source\Geometry\2D\Vector2.cpp" />
     <ClCompile Include="Source\Geometry\3D\AABB.cpp" />
     <ClCompile Include="Source\Geometry\3D\Edge3D.cpp" />
@@ -427,6 +429,7 @@
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

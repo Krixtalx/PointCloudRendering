@@ -22,7 +22,7 @@ VAO::VAO(bool gpuGeometry): _vao(-1), _vbo(RendEnum::numVBOTypes()), _ibo(RendEn
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, sizeof(vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(PointCloud::PointModel), ((GLubyte*)nullptr));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PointCloud::PointModel), ((GLubyte*)nullptr));
 		accumSize += sizeof(vec3);
 
 		// RGB
