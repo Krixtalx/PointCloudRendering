@@ -7,7 +7,7 @@
 #include "Graphics/Core/CADModel.h"
 #include "Graphics/Core/Light.h"
 #include "Graphics/Core/OpenGLUtilities.h"
-#include "../../../ProceduralGenerator.h"
+#include "ProceduralUtils/ProceduralGenerator.h"
 
 /// Initialization of static attributes
 const std::string PointCloudScene::SCENE_CAMERA_FILE = "Camera.txt";

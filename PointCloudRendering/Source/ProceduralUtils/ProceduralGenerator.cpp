@@ -3,10 +3,35 @@
 
 void ProceduralGenerator::setCurrentCloudScene(PointCloudScene* pointCloudScene)
 {
+	for (size_t x = 0; x < axisSubdivision[0]; x++)
+	{
+		for (size_t y = 0; y < axisSubdivision[1]; y++)
+		{
+			for (size_t z = 0; z < axisSubdivision[2]; z++)
+			{
+				delete subdivisions[x][y][z];
+			}
+		}
+	}
 	this->_pointCloudScene = pointCloudScene;
 	calculateCloudDensity();
+	
 	readParameters("proceduralParameters.ini");
 	subdivideCloud();
+}
+
+ProceduralGenerator::~ProceduralGenerator()
+{
+	for (size_t x = 0; x < axisSubdivision[0]; x++)
+	{
+		for (size_t y = 0; y < axisSubdivision[1]; y++)
+		{
+			for (size_t z = 0; z < axisSubdivision[2]; z++)
+			{
+				delete subdivisions[x][y][z];
+			}
+		}
+	}
 }
 
 void ProceduralGenerator::calculateCloudDensity()
@@ -40,6 +65,7 @@ void ProceduralGenerator::readParameters(const std::string& path)
 				if (parameter == "xSubdivisions") axisSubdivision[0] = stoi(value);
 				if (parameter == "ySubdivisions") axisSubdivision[1] = stoi(value);
 				if (parameter == "zSubdivisions") axisSubdivision[2] = stoi(value);
+				if (parameter == "expansion")	  expansion = stoi(value);
 			}
 		}
 		parametersFile.close();
@@ -49,7 +75,39 @@ void ProceduralGenerator::readParameters(const std::string& path)
 void ProceduralGenerator::subdivideCloud()
 {
 	vec3 size = _pointCloudScene->_pointCloud->getAABB().size();
-	AABB* aabb = new AABB(_pointCloudScene->_pointCloud->getAABB());
-	DrawAABB* test = new DrawAABB(aabb);
-	_pointCloudScene->_sceneGroup->addComponent(test);
+	vec3 minPoint = _pointCloudScene->_pointCloud->getAABB().min();
+	float stride[3];
+
+	for (unsigned i = 0; i < 3; i++)
+	{
+		stride[i] = size[i] / axisSubdivision[i];
+		axisSubdivision[i] *= expansion;
+		minPoint[i] *= expansion;
+	}
+	
+	subdivisions.resize(axisSubdivision[0]);
+	for (size_t x = 0; x < axisSubdivision[0]; x++)
+	{
+		subdivisions[x].resize(axisSubdivision[1]);
+		for (size_t y = 0; y < axisSubdivision[1]; y++)
+		{
+			subdivisions[x][y].resize(axisSubdivision[2]);
+			for (size_t z = 0; z < axisSubdivision[2]; z++)
+			{
+				AABB* newAABB = new AABB;
+				vec3 point(minPoint);
+				point[0] += stride[0] * x;
+				point[1] += stride[1] * y;
+				point[2] += stride[2] * z;
+				newAABB->update(point);
+				point[0] += stride[0];
+				point[1] += stride[1];
+				point[2] += stride[2];
+				newAABB->update(point);
+				ProceduralVoxel* procVoxel = new ProceduralVoxel(newAABB);
+				subdivisions[x][y][z] = procVoxel;
+				_pointCloudScene->_sceneGroup->addComponent(procVoxel);
+			}
+		}
+	}
 }

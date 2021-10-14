@@ -15,6 +15,7 @@
 */
 class PointCloud : public Model3D
 {
+	friend class ProceduralVoxel;
 public:
 	struct PointModel
 	{
@@ -49,6 +50,8 @@ protected:
 	std::vector<PointModel>		_points;									//!<			
 
 protected:
+
+	PointCloud(const mat4& modelMatrix = mat4(1.0f));
 	/**
 	*	@brief Computes a triangle mesh buffer composed only by indices.
 	*/

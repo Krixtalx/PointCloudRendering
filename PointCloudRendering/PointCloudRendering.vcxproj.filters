@@ -262,6 +262,12 @@
     <Filter Include="Archivos de origen\ImportedLibraries\imfiledialog">
       <UniqueIdentifier>{3c5184ac-87a6-463e-9bb8-36cfe7fc482e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\ProceduralUtils">
+      <UniqueIdentifier>{4b58420a-204b-4d7a-a4d5-026de1292368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\ProceduralUtils">
+      <UniqueIdentifier>{1d96cb5a-6e72-4581-abd5-b181dede297d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Geometry\2D\Vector2.h">
@@ -540,8 +546,11 @@
     <ClInclude Include="Source\Graphics\Application\PointCloudParameters.h">
       <Filter>Archivos de encabezado\Graphics\Application</Filter>
     </ClInclude>
-    <ClInclude Include="ProceduralGenerator.h">
-      <Filter>Archivos de encabezado</Filter>
+    <ClInclude Include="Source\ProceduralUtils\ProceduralGenerator.h">
+      <Filter>Archivos de encabezado\ProceduralUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ProceduralUtils\ProceduralVoxel.h">
+      <Filter>Archivos de encabezado\ProceduralUtils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -779,8 +788,11 @@
     <ClCompile Include="Libraries\imfiledialog\ImGuiFileDialog.cpp">
       <Filter>Archivos de origen\ImportedLibraries\imfiledialog</Filter>
     </ClCompile>
-    <ClCompile Include="ProceduralGenerator.cpp">
-      <Filter>Archivos de origen</Filter>
+    <ClCompile Include="Source\ProceduralUtils\ProceduralGenerator.cpp">
+      <Filter>Archivos de origen\ProceduralUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProceduralUtils\ProceduralVoxel.cpp">
+      <Filter>Archivos de origen\ProceduralUtils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

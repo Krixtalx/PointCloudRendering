@@ -63,6 +63,10 @@ bool PointCloud::writePointCloud(const std::string& filename, const bool ascii)
 
 /// [Protected methods]
 
+PointCloud::PointCloud(const mat4& modelMatrix):Model3D(modelMatrix, 1), _filename(""), _useBinary(false)
+{
+}
+
 void PointCloud::computeCloudData()
 {
 	ModelComponent* modelComp = _modelComp[0];

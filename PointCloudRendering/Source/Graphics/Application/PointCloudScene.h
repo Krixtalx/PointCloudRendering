@@ -18,7 +18,6 @@
 */
 class PointCloudScene: public SSAOScene
 {
-
 	friend class ProceduralGenerator;
 protected:
 	// Settings constraints
