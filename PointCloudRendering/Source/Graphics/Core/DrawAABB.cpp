@@ -9,7 +9,6 @@
 DrawAABB::DrawAABB(AABB* aabb, const mat4& modelMatrix):
 	Model3D(modelMatrix), _aabb(aabb), _vao(Primitives::getCubeVAO())
 {
-	std::cout << _aabb->size().x << std::endl;;
 	// Compute model matrix: default cube is 1 x 1 x 1, centered at (0, 0, 0)
 	_modelMatrix = _modelMatrix * glm::translate(mat4(1.0f), _aabb->center()) * glm::scale(mat4(1.0f), _aabb->extent() * 2.0f);
 }

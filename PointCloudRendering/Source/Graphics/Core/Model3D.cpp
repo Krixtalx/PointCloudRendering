@@ -375,7 +375,7 @@ void Model3D::setShaderUniforms(ShaderProgram* shader, const RendEnum::RendShade
 	case RendEnum::POINT_CLOUD_SHADER:
 		shader->setUniform("mModelViewProj", matrix[RendEnum::VIEW_PROJ_MATRIX] * matrix[RendEnum::MODEL_MATRIX]);
 		shader->setUniform("pointSize", rendParams->_scenePointSize);
-		shader->setUniform("vColor", rendParams->_scenePointCloudColor);
+		//shader->setUniform("vColor", rendParams->_scenePointCloudColor);
 
 		break;
 

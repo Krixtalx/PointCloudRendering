@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "VAO.h"
+#include <Graphics/Core/PointCloud.h>
 
 /// [Public methods]
 
@@ -13,10 +14,20 @@ VAO::VAO(bool gpuGeometry): _vao(-1), _vbo(RendEnum::numVBOTypes()), _ibo(RendEn
 	if (!gpuGeometry)
 	{
 		_vboIndex = 0;
-		this->declareSimpleVBO(RendEnum::VBO_POSITION, sizeof(vec4), GL_FLOAT, _vboIndex);
-		this->declareSimpleVBO(RendEnum::VBO_NORMAL, sizeof(vec3), GL_FLOAT, _vboIndex);
-		this->declareSimpleVBO(RendEnum::VBO_TEXT_COORD, sizeof(vec2), GL_FLOAT, _vboIndex);
-		this->declareSimpleVBO(RendEnum::VBO_TANGENT, sizeof(vec3), GL_FLOAT, _vboIndex);
+		size_t accumSize = 0;
+		/*this->declareSimpleVBO(RendEnum::VBO_POSITION, sizeof(vec4), GL_FLOAT, _vboIndex);
+		this->declareSimpleVBO(RendEnum::VBO_NORMAL, GL_UNSIGNED_BYTE*4, GL_UNSIGNED_BYTE, _vboIndex);*/
+
+		glGenBuffers(1, &_vbo[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PointCloud::PointModel), ((GLubyte*)nullptr));
+		accumSize += sizeof(vec3);
+
+		// RGB
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(PointCloud::PointModel), ((GLubyte*)nullptr + accumSize));
 	}
 	else
 	{
@@ -60,13 +71,23 @@ void VAO::drawObject(const GLuint openGLPrimitive, const GLuint numVertices, con
 	}
 }
 
+//void VAO::setVBOData(const std::vector<Model3D::VertexGPUData>& geometryData, const GLuint changeFrequency)
+//{
+//	glBindVertexArray(_vao);
+//
+//	{
+//		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
+//		glBufferData(GL_ARRAY_BUFFER, geometryData.size() * sizeof(Model3D::VertexGPUData), geometryData.data(), changeFrequency);
+//	}
+//}
+
 void VAO::setVBOData(const std::vector<Model3D::VertexGPUData>& geometryData, const GLuint changeFrequency)
 {
 	glBindVertexArray(_vao);
 
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);
-		glBufferData(GL_ARRAY_BUFFER, geometryData.size() * sizeof(Model3D::VertexGPUData), geometryData.data(), changeFrequency);
+		glBufferData(GL_ARRAY_BUFFER, geometryData.size(), geometryData.data(), changeFrequency);
 	}
 }
 
@@ -92,7 +113,8 @@ void VAO::declareSimpleVBO(const RendEnum::VBOTypes vboType, const GLsizei dataS
 
 	{
 		glEnableVertexAttribArray(shaderSlot);
-		glVertexAttribPointer(shaderSlot++, dataSize / sizeof(unitType), unitType, GL_FALSE, dataSize, ((GLubyte*)nullptr));			// Once shader slot is defined at both sentences, it can be increased
+		glVertexAttribPointer(shaderSlot++, dataSize / sizeof(unitType), unitType, GL_TRUE, dataSize, ((GLubyte*)nullptr));
+		// Once shader slot is defined at both sentences, it can be increased
 	}
 }
 

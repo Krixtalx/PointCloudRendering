@@ -36,6 +36,7 @@ public:
 		*	@brief Packs an RGB color into an unsigned value. 
 		*/
 		void saveRGB(const vec3& rgb) { _rgb = this->getRGBColor(rgb); }
+		
 	};
 
 protected:

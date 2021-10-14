@@ -41,7 +41,7 @@ bool PointCloudScene::loadPointCloud(const std::string& path)
 
 	if (nullPointCloud) this->loadDefaultCamera(_cameraManager->getActiveCamera());
 
-	std::cout << _pointCloud->getNumberOfPoints() << std::endl;
+	//std::cout << _pointCloud->getNumberOfPoints() << std::endl;
 	
 	
 	this->_sceneGroup->addComponent(_pointCloud);
@@ -62,7 +62,7 @@ void PointCloudScene::render(const mat4& mModel, RenderingParameters* rendParams
 	this->bindDefaultFramebuffer(rendParams);	
 	//this->renderPointCloud(mModel, rendParams);
 	this->drawAsPoints(mModel, rendParams);
-	this->renderWireframe(mModel, rendParams);
+	//this->renderWireframe(mModel, rendParams);
 }
 
 AABB PointCloudScene::getAABB()
