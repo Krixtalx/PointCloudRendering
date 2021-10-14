@@ -62,7 +62,7 @@ void PointCloudScene::render(const mat4& mModel, RenderingParameters* rendParams
 	this->bindDefaultFramebuffer(rendParams);	
 	//this->renderPointCloud(mModel, rendParams);
 	this->drawAsPoints(mModel, rendParams);
-	//this->renderWireframe(mModel, rendParams);
+	this->renderWireframe(mModel, rendParams);
 }
 
 AABB PointCloudScene::getAABB()
