@@ -15,8 +15,6 @@ VAO::VAO(bool gpuGeometry): _vao(-1), _vbo(RendEnum::numVBOTypes()), _ibo(RendEn
 	{
 		_vboIndex = 0;
 		size_t accumSize = 0;
-		/*this->declareSimpleVBO(RendEnum::VBO_POSITION, sizeof(vec4), GL_FLOAT, _vboIndex);
-		this->declareSimpleVBO(RendEnum::VBO_NORMAL, GL_UNSIGNED_BYTE*4, GL_UNSIGNED_BYTE, _vboIndex);*/
 
 		glGenBuffers(1, &_vbo[0]);
 		glBindBuffer(GL_ARRAY_BUFFER, _vbo[RendEnum::VBO_POSITION]);

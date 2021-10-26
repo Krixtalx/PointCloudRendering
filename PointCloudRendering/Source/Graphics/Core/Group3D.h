@@ -117,6 +117,11 @@ public:
 	*/
 	void registerScene();
 
+	/**
+	* @brief Remove all the objects from the objects vector.
+	*/
+	void emptyScene();
+
 	// ------------------------- Getters -------------------------------
 
 	/**

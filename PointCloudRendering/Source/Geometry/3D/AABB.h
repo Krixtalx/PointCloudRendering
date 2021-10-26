@@ -79,5 +79,10 @@ public:
 	*	@brief Updates the maximum and minimum corners if point is outside the bounding box.
 	*/
 	void update(const vec3& point);
+
+	/**
+	* @brief Checks if the point passed as a parameters is inside the bounding box
+	*/
+	bool isInside(const vec3& point);
 };
 

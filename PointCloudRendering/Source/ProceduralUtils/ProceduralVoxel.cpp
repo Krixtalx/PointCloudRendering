@@ -2,9 +2,8 @@
 #include "ProceduralVoxel.h"
 
 
-ProceduralVoxel::ProceduralVoxel(AABB* aabb)
+ProceduralVoxel::ProceduralVoxel(PointCloud* pointCloud, AABB* aabb) :pointCloud(pointCloud)
 {
-	pointCloud = new PointCloud();
 	setAABB(aabb);
 }
 
@@ -12,19 +11,20 @@ ProceduralVoxel::~ProceduralVoxel()
 {
 	delete aabb;
 	delete drawAABB;
-	delete pointCloud;
 }
 
-void ProceduralVoxel::addPoint(PointCloud::PointModel point)
+void ProceduralVoxel::addPoint(unsigned pointIndex)
 {
-	if (pointCloud)
-		pointCloud->getPoints()->push_back(point);
+	pointsIndex.push_back(pointIndex);
 }
 
 void ProceduralVoxel::drawAsLines(RenderingShader* shader, const RendEnum::RendShaderTypes shaderType, std::vector<mat4>& matrix)
 {
-	if (drawAABB)
+	if (wireframe) {
+		if(!drawAABB)
+			drawAABB = new DrawAABB(this->aabb);
 		drawAABB->drawAsLines(shader, shaderType, matrix);
+	}
 }
 
 void ProceduralVoxel::setAABB(AABB* aabb)
@@ -34,12 +34,49 @@ void ProceduralVoxel::setAABB(AABB* aabb)
 	this->aabb = aabb;
 	if (drawAABB)
 		delete drawAABB;
-	drawAABB = new DrawAABB(this->aabb);
+}
+
+void ProceduralVoxel::setProcedural(bool proc)
+{
+	this->procedural = proc;
+}
+
+void ProceduralVoxel::computeHeight()
+{
+	std::vector<PointCloud::PointModel>* points = pointCloud->getPoints();
+	unsigned size = pointsIndex.size();
+	height = 0;
+	if (size != 0) {
+		for (size_t i = 0; i < size; i++)
+		{
+			height += (*points)[pointsIndex[i]]._point[2];
+		}
+
+		height /= size;
+		/*PointCloud::PointModel point;
+		point._point = aabb->center();
+		point._point[2] = height;
+		point.saveRGB(glm::vec3(1, 0, 0));
+		points->push_back(point);*/
+	}
+	else {
+		height = FLT_MAX;
+	}
+}
+
+bool ProceduralVoxel::isInside(PointCloud::PointModel point)
+{
+	return aabb->isInside(point._point);
 }
 
 bool ProceduralVoxel::load(const mat4& modelMatrix)
 {
-	this->_loaded = true;
+	//this->_loaded = true;
 
 	return true;
+}
+
+float ProceduralVoxel::getHeight()
+{
+	return height;
 }

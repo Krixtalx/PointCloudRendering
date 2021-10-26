@@ -194,7 +194,6 @@ void PointCloud::setVAOData()
 {
 	VAO* vao = new VAO(false);
 	ModelComponent* modelComp = _modelComp[0];
-	unsigned startIndex = 0, size = modelComp->_pointCloud.size(), currentSize;
 
 	vao->setVBOData(RendEnum::VBO_POSITION, _points, GL_STATIC_DRAW);
 

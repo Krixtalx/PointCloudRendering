@@ -8,16 +8,22 @@ class ProceduralGenerator: public Singleton<ProceduralGenerator>{
 
 private:
 	PointCloudScene* _pointCloudScene = nullptr;
+
 	unsigned axisSubdivision[3];
-	std::vector<std::vector<std::vector<ProceduralVoxel*>>> subdivisions;
+	unsigned axisSubdivisionOriginal[3];
+	float gsd;
 	int expansion;
+
+	std::vector<std::vector<std::vector<ProceduralVoxel*>>> subdivisions;
 	float cloudDensity;
 
 protected:
 	ProceduralGenerator() = default;
 	void calculateCloudDensity();
 	void readParameters(const std::string & path);
+	void createVoxelGrid();
 	void subdivideCloud();
+	void saveHeightMap();
 
 public:
 	~ProceduralGenerator();

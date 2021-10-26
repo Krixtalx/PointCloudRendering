@@ -68,7 +68,6 @@ bool Window::load(const std::string& title, const uint16_t width, const uint16_t
 	InputManager::getInstance()->initialize(_window);
 
 	_windowState = SUCCESSFUL_LOAD;	
-
 	return true;
 }
 

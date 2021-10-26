@@ -32,6 +32,8 @@ protected:
 	RenderingShader*		_quadRenderer;
 	VAO*					_quadVAO;
 
+	bool isVisible = true;
+
 protected:
 	/**
 	*	@brief Loads a camera with code-defined values.
@@ -82,7 +84,7 @@ public:
 	/**
 	*	@return True if the point cloud was successfully loaded.
 	*/
-	bool loadPointCloud(const std::string& path);
+	bool loadPointCloud(const std::string& path, const bool& aggregate = false);
 
 	/**
 	*	@brief Resize event.

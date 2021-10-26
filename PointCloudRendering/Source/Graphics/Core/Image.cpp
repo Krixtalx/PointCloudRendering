@@ -75,5 +75,7 @@ void Image::saveImage(const std::string& filename)
 
 void Image::threadedWriteImage(std::vector<GLubyte>* pixels, const std::string& filename, const uint16_t width, const uint16_t height)
 {
-	FileManagement::saveImage(filename, pixels, width, height);
+	if (!FileManagement::saveImage(filename, pixels, width, height)) {
+		std::cerr << "Unexpected error while saving the image file" << std::endl;
+	}
 }

@@ -11,11 +11,13 @@
 */
 
 /**
-*	@brief 
+*	@brief
 */
 class PointCloud : public Model3D
 {
 	friend class ProceduralVoxel;
+	friend class ProceduralGenerator;
+	friend class PointCloudScene;
 public:
 	struct PointModel
 	{
@@ -23,7 +25,7 @@ public:
 		unsigned	_rgb;
 
 		/**
-		*	@return RGB color packed as a single unsigned value. 
+		*	@return RGB color packed as a single unsigned value.
 		*/
 		static unsigned getRGBColor(const vec3& rgb) { return glm::packUnorm4x8(vec4(rgb, .0f) / 255.0f); }
 
@@ -33,10 +35,10 @@ public:
 		vec4 getRGBVec3() { return glm::unpackUnorm4x8(_rgb) * 255.0f; }
 
 		/**
-		*	@brief Packs an RGB color into an unsigned value. 
+		*	@brief Packs an RGB color into an unsigned value.
 		*/
 		void saveRGB(const vec3& rgb) { _rgb = this->getRGBColor(rgb); }
-		
+
 	};
 
 protected:
@@ -48,7 +50,7 @@ protected:
 
 	// Spatial information
 	AABB						_aabb;										//!<
-	std::vector<PointModel>		_points;									//!<			
+	std::vector<PointModel>		_points;									//!<		
 
 protected:
 
@@ -91,7 +93,7 @@ protected:
 
 public:
 	/**
-	*	@brief 
+	*	@brief
 	*/
 	PointCloud(const std::string& filename, const bool useBinary, const mat4& modelMatrix = mat4(1.0f));
 
@@ -139,6 +141,6 @@ public:
 	*/
 	std::vector<PointModel>* getPoints() { return &_points; }
 
-	
+
 };
 

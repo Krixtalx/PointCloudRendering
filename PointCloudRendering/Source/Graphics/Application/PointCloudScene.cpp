@@ -30,11 +30,13 @@ PointCloudScene::~PointCloudScene()
 	delete _pointCloudAggregator;
 }
 
-bool PointCloudScene::loadPointCloud(const std::string& path)
+bool PointCloudScene::loadPointCloud(const std::string& path, const bool& aggregate)
 {
 	bool nullPointCloud = _pointCloud == nullptr;
-	
-	delete _pointCloud;
+	PointCloud* aux = _pointCloud;
+	if (!aggregate) {
+		delete _pointCloud;
+	}
 	_pointCloud = new PointCloud(path, true);
 	if (!_pointCloud->load()) return false;
 	_pointCloudAggregator->setPointCloud(_pointCloud);
@@ -42,11 +44,21 @@ bool PointCloudScene::loadPointCloud(const std::string& path)
 	if (nullPointCloud) this->loadDefaultCamera(_cameraManager->getActiveCamera());
 
 	//std::cout << _pointCloud->getNumberOfPoints() << std::endl;
-	
-	
+	if (aggregate && !nullPointCloud) {
+		auto points = _pointCloud->getPoints();
+		auto pointsAux = aux->getPoints();
+		for (size_t i = 0; i < pointsAux->size(); i++)
+		{
+			points->push_back((*pointsAux)[i]);
+			_pointCloud->updateBoundaries((*pointsAux)[i]._point);
+		}
+		_pointCloud->setVAOData();
+		delete aux;
+	}
+	this->_sceneGroup->emptyScene();
 	this->_sceneGroup->addComponent(_pointCloud);
 	ProceduralGenerator::getInstance()->setCurrentCloudScene(this);
-	
+
 	return true;
 }
 
@@ -59,7 +71,7 @@ void PointCloudScene::modifySize(const uint16_t width, const uint16_t height)
 
 void PointCloudScene::render(const mat4& mModel, RenderingParameters* rendParams)
 {
-	this->bindDefaultFramebuffer(rendParams);	
+	this->bindDefaultFramebuffer(rendParams);
 	//this->renderPointCloud(mModel, rendParams);
 	this->drawAsPoints(mModel, rendParams);
 	this->renderWireframe(mModel, rendParams);
@@ -121,7 +133,7 @@ void PointCloudScene::loadModels()
 		_sceneGroup = new Group3D;
 		_pointCloudAggregator = new PointCloudAggregator();
 	}
-	
+
 	SSAOScene::loadModels();
 }
 

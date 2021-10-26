@@ -146,7 +146,7 @@ void GUI::showPointCloudDialog()
 	if (ImGui::Begin("Open Point Cloud Dialog", &_showPointCloudDialog))
 	{
 		GLuint minIterations = 1, maxIterations = 4;
-		
+		static bool aggregate;
 		this->leaveSpace(1);
 
 		ImGui::Text("Open point cloud");
@@ -159,6 +159,7 @@ void GUI::showPointCloudDialog()
 		ImGui::SameLine(0, 80); ImGui::PushItemWidth(150.0f);
 		ImGui::SliderScalar("Iterations", ImGuiDataType_U16, &PointCloudParameters::_reduceIterations, &minIterations, &maxIterations);
 		ImGui::PopItemWidth();
+		ImGui::Checkbox("Aggregate", &aggregate);
 
 		ImGui::PushID(0);
 		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(1 / 7.0f, 0.6f, 0.6f));
@@ -169,7 +170,7 @@ void GUI::showPointCloudDialog()
 
 		if (ImGui::Button("Open Point Cloud"))
 		{
-			_pointCloudScene->loadPointCloud(_pointCloudPath);
+			_pointCloudScene->loadPointCloud(_pointCloudPath, aggregate);
 			_showPointCloudDialog = false;
 			*(InputManager::getInstance()->getMovementMultiplier()) = distance(_pointCloudScene->getAABB().min(), _pointCloudScene->getAABB().max())/1000;
 		}

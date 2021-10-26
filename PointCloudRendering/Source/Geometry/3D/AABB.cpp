@@ -85,3 +85,8 @@ void AABB::update(const vec3& point)
 	if (point.y > _max.y) { _max.y = point.y; }
 	if (point.z > _max.z) { _max.z = point.z; }
 }
+
+bool AABB::isInside(const vec3& point)
+{
+	return (point.x >= _min.x) && (point.y >= _min.y) && (point.z >= _min.z) && (point.x <= _max.x) && (point.y <= _max.y) && (point.z <= _max.z);
+}
