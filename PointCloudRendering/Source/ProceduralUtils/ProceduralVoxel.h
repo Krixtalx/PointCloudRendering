@@ -2,14 +2,14 @@
 #include <Geometry/3D/AABB.h>
 #include <Graphics/Core/DrawAABB.h>
 #include <Graphics/Core/PointCloud.h>
-class ProceduralVoxel{
+class ProceduralVoxel{//:public Model3D{
 private:
 	AABB* aabb;
 	DrawAABB* drawAABB;
 	PointCloud* pointCloud;
 	std::vector<unsigned> pointsIndex;
 	bool procedural = true;
-	static const bool wireframe = false;
+	static const bool wireframe = true;
 	float height;
 
 public:
@@ -27,6 +27,8 @@ public:
 	void setProcedural(bool proc);
 
 	void computeHeight();
+	
+	void checkPoints();
 
 	bool isInside(PointCloud::PointModel point);
 

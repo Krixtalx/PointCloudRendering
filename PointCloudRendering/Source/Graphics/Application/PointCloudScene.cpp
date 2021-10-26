@@ -55,7 +55,8 @@ bool PointCloudScene::loadPointCloud(const std::string& path, const bool& aggreg
 		_pointCloud->setVAOData();
 		delete aux;
 	}
-	this->_sceneGroup->emptyScene();
+	if (nullPointCloud)
+		this->_sceneGroup->emptyScene();
 	this->_sceneGroup->addComponent(_pointCloud);
 	ProceduralGenerator::getInstance()->setCurrentCloudScene(this);
 

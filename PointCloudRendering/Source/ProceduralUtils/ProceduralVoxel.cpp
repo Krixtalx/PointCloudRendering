@@ -62,6 +62,21 @@ void ProceduralVoxel::computeHeight()
 	else {
 		height = FLT_MAX;
 	}
+	//std::cout << height << std::endl;
+}
+
+void ProceduralVoxel::checkPoints()
+{
+	std::vector<PointCloud::PointModel>* points = pointCloud->getPoints();
+	unsigned size = pointsIndex.size();
+	if (size != 0) {
+		for (size_t i = 0; i < size; i++)
+		{
+			if (!isInside((*points)[pointsIndex[i]])) {
+				std::cout << "Outside point" << std::endl;
+			}
+		}
+	}
 }
 
 bool ProceduralVoxel::isInside(PointCloud::PointModel point)

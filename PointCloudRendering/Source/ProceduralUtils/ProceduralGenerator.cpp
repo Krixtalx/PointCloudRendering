@@ -43,6 +43,7 @@ void ProceduralGenerator::calculateCloudDensity()
 		int numberPoints = _pointCloudScene->_pointCloud->getNumberOfPoints();
 		vec3 AABBSize = _pointCloudScene->getAABB().size();
 		cloudDensity = numberPoints / (AABBSize.x * AABBSize.y * AABBSize.z);
+		std::cout << "Cloud density: " << cloudDensity << std::endl;
 	}
 	else {
 		std::cerr << "[ProceduralGenerator]->Nullptr in _pointCloudScene" << std::endl;
@@ -65,17 +66,18 @@ void ProceduralGenerator::readParameters(const std::string& path)
 				int pos = line.find("=");
 				std::string parameter = line.substr(0, pos);
 				std::string value = line.substr(++pos, line.length());
-				if (parameter == "gsd")			  gsd = stof(value);
-				if (parameter == "expansion")	  expansion = stoi(value);
+				if (parameter == "gsd")			   gsd = stof(value);
+				else if (parameter == "expansion") expansion = stoi(value);
 			}
 		}
 		parametersFile.close();
 		vec3 size = _pointCloudScene->_pointCloud->getAABB().size();
 		for (size_t i = 0; i < 2; i++)
 		{
-			axisSubdivision[i] = size[i] / gsd;
+			axisSubdivision[i] = round(size[0] / gsd);
 			axisSubdivisionOriginal[i] = axisSubdivision[i];
 		}
+
 		axisSubdivisionOriginal[2] = axisSubdivision[2] = 1;
 	}
 }
@@ -151,20 +153,20 @@ void ProceduralGenerator::subdivideCloud()
 	for (unsigned i = 0; i < points->size(); i++)
 	{
 		relativePoint = (*points)[i]._point - minPoint;
-		x = abs(floor(relativePoint[0] / stride[0]) + xOffset);
-		y = abs(floor(relativePoint[1] / stride[1]) + yOffset);
-		z = abs(floor(relativePoint[2] / stride[2]) + zOffset);
+		x = floor(relativePoint[0] / stride[0]) + xOffset;
+		y = floor(relativePoint[1] / stride[1]) + yOffset;
+		z = floor(relativePoint[2] / stride[2]) + zOffset;
 		if (x == axisSubdivisionOriginal[0] + xOffset)
-			x = axisSubdivisionOriginal[0] + xOffset - 1;
+			x--;
 		if (y == axisSubdivisionOriginal[1] + yOffset)
-			y = axisSubdivisionOriginal[1] + yOffset - 1;
+			y--;
 		if (z == axisSubdivisionOriginal[2] + zOffset)
-			z = axisSubdivisionOriginal[2] + zOffset - 1;
+			z--;
 
 		subdivisions[x][y][z]->addPoint(i);
 	}
 
-#pragma omp parallel for collapse(3)
+//#pragma omp parallel for collapse(3)
 	for (int x = startPoint[0]; x < startPoint[0] + axisSubdivisionOriginal[0]; x++)
 	{
 		for (int y = startPoint[1]; y < startPoint[1] + axisSubdivisionOriginal[1]; y++)
@@ -173,12 +175,12 @@ void ProceduralGenerator::subdivideCloud()
 			{
 				subdivisions[x][y][z]->setProcedural(false);
 				subdivisions[x][y][z]->computeHeight();
+				//subdivisions[x][y][z]->checkPoints();
 			}
 		}
 	}
 
 	saveHeightMap();
-
 }
 
 void ProceduralGenerator::saveHeightMap()
@@ -197,7 +199,7 @@ void ProceduralGenerator::saveHeightMap()
 			if (height != FLT_MAX)
 				relativeHeightValue = (height - minPointZ) / relativeMaxPointZ;
 			else
-				relativeHeightValue = minPointZ / relativeMaxPointZ;
+				relativeHeightValue = 0;
 			color = std::min(255, int(relativeHeightValue * 256.0f));
 			pixels->push_back(color);
 			pixels->push_back(color);
@@ -206,6 +208,6 @@ void ProceduralGenerator::saveHeightMap()
 
 		}
 	}
-	Image* image = new Image(pixels->data(), axisSubdivision[0], axisSubdivision[1], 4);
+	Image* image = new Image(pixels->data(), axisSubdivision[1], axisSubdivision[0], 4);
 	image->saveImage("heightmap.png");
 }
