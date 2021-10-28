@@ -74,10 +74,11 @@ void ProceduralGenerator::readParameters(const std::string& path)
 		vec3 size = _pointCloudScene->_pointCloud->getAABB().size();
 		for (size_t i = 0; i < 2; i++)
 		{
-			axisSubdivision[i] = round(size[0] / gsd);
+			axisSubdivision[i] = round(size[i] / gsd);
 			axisSubdivisionOriginal[i] = axisSubdivision[i];
 		}
-
+		//axisSubdivisionOriginal[0] = axisSubdivision[0] = 1000;
+		//axisSubdivisionOriginal[1] = axisSubdivision[1] = 500;
 		axisSubdivisionOriginal[2] = axisSubdivision[2] = 1;
 	}
 }
@@ -166,7 +167,7 @@ void ProceduralGenerator::subdivideCloud()
 		subdivisions[x][y][z]->addPoint(i);
 	}
 
-//#pragma omp parallel for collapse(3)
+#pragma omp parallel for collapse(3)
 	for (int x = startPoint[0]; x < startPoint[0] + axisSubdivisionOriginal[0]; x++)
 	{
 		for (int y = startPoint[1]; y < startPoint[1] + axisSubdivisionOriginal[1]; y++)
@@ -190,9 +191,9 @@ void ProceduralGenerator::saveHeightMap()
 	float relativeHeightValue;
 	float height;
 	std::vector<unsigned char>* pixels = new std::vector<unsigned char>();
-	for (int x = 0; x < axisSubdivision[0]; x++)
+	for (int y = 0; y < axisSubdivision[1]; y++)
 	{
-		for (int y = 0; y < axisSubdivision[1]; y++)
+		for (int x = 0; x < axisSubdivision[0]; x++)
 		{
 			unsigned char color;
 			height = subdivisions[x][y][0]->getHeight();
@@ -208,6 +209,6 @@ void ProceduralGenerator::saveHeightMap()
 
 		}
 	}
-	Image* image = new Image(pixels->data(), axisSubdivision[1], axisSubdivision[0], 4);
+	Image* image = new Image(pixels->data(), axisSubdivision[0], axisSubdivision[1], 4);
 	image->saveImage("heightmap.png");
 }
