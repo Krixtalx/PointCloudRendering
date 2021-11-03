@@ -24,6 +24,7 @@ protected:
 	void createVoxelGrid();
 	void subdivideCloud();
 	void saveHeightMap();
+	void saveTextureMap();
 
 public:
 	~ProceduralGenerator();

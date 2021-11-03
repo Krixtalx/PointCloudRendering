@@ -21,7 +21,7 @@ void ProceduralVoxel::addPoint(unsigned pointIndex)
 void ProceduralVoxel::drawAsLines(RenderingShader* shader, const RendEnum::RendShaderTypes shaderType, std::vector<mat4>& matrix)
 {
 	if (wireframe) {
-		if(!drawAABB)
+		if (!drawAABB)
 			drawAABB = new DrawAABB(this->aabb);
 		drawAABB->drawAsLines(shader, shaderType, matrix);
 	}
@@ -65,6 +65,24 @@ void ProceduralVoxel::computeHeight()
 	//std::cout << height << std::endl;
 }
 
+void ProceduralVoxel::computeColor()
+{
+	std::vector<PointCloud::PointModel>* points = pointCloud->getPoints();
+	unsigned size = pointsIndex.size();
+	color = { 0, 0, 0 };
+	if (size != 0) {
+		for (size_t i = 0; i < size; i++)
+		{
+			color += glm::vec3((*points)[pointsIndex[i]].getRGBVec3());
+		}
+
+		color /= size;
+	}
+	else {
+		color = { 0, 0, 0 };
+	}
+}
+
 void ProceduralVoxel::checkPoints()
 {
 	std::vector<PointCloud::PointModel>* points = pointCloud->getPoints();
@@ -94,4 +112,9 @@ bool ProceduralVoxel::load(const mat4& modelMatrix)
 float ProceduralVoxel::getHeight()
 {
 	return height;
+}
+
+glm::vec3 ProceduralVoxel::getColor()
+{
+	return color;
 }

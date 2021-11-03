@@ -11,6 +11,7 @@ private:
 	bool procedural = true;
 	static const bool wireframe = true;
 	float height;
+	glm::vec3 color;
 
 public:
 
@@ -27,6 +28,8 @@ public:
 	void setProcedural(bool proc);
 
 	void computeHeight();
+
+	void computeColor();
 	
 	void checkPoints();
 
@@ -35,5 +38,7 @@ public:
 	bool load(const mat4& modelMatrix);
 
 	float getHeight();
+
+	glm::vec3 getColor();
 };
 

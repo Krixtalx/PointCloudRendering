@@ -176,12 +176,14 @@ void ProceduralGenerator::subdivideCloud()
 			{
 				subdivisions[x][y][z]->setProcedural(false);
 				subdivisions[x][y][z]->computeHeight();
+				subdivisions[x][y][z]->computeColor();
 				//subdivisions[x][y][z]->checkPoints();
 			}
 		}
 	}
 
 	saveHeightMap();
+	saveTextureMap();
 }
 
 void ProceduralGenerator::saveHeightMap()
@@ -202,6 +204,7 @@ void ProceduralGenerator::saveHeightMap()
 			else
 				relativeHeightValue = 0;
 			color = std::min(255, int(relativeHeightValue * 256.0f));
+			glm::vec3 aux = subdivisions[x][y][0]->getColor();
 			pixels->push_back(color);
 			pixels->push_back(color);
 			pixels->push_back(color);
@@ -211,4 +214,27 @@ void ProceduralGenerator::saveHeightMap()
 	}
 	Image* image = new Image(pixels->data(), axisSubdivision[0], axisSubdivision[1], 4);
 	image->saveImage("heightmap.png");
+}
+
+void ProceduralGenerator::saveTextureMap()
+{
+	float minPointZ = _pointCloudScene->_pointCloud->getAABB().min()[2];
+	float relativeMaxPointZ = _pointCloudScene->_pointCloud->getAABB().max()[2] - minPointZ;
+	float relativeHeightValue;
+	glm::vec3 color;
+	std::vector<unsigned char>* pixels = new std::vector<unsigned char>();
+	for (int y = 0; y < axisSubdivision[1]; y++)
+	{
+		for (int x = 0; x < axisSubdivision[0]; x++)
+		{
+			color = subdivisions[x][y][0]->getColor();
+			pixels->push_back(color[0]);
+			pixels->push_back(color[1]);
+			pixels->push_back(color[2]);
+			pixels->push_back(255);
+
+		}
+	}
+	Image* image = new Image(pixels->data(), axisSubdivision[0], axisSubdivision[1], 4);
+	image->saveImage("texturemap.png");
 }
