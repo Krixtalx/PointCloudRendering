@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ProceduralGenerator.h"
 #include <omp.h>
+#include "tinynurbs.h"
+
 
 void ProceduralGenerator::setCurrentCloudScene(PointCloudScene* pointCloudScene)
 {
@@ -19,8 +21,9 @@ void ProceduralGenerator::setCurrentCloudScene(PointCloudScene* pointCloudScene)
 	calculateCloudDensity();
 
 	readParameters("proceduralParameters.ini");
-	createVoxelGrid();
-	subdivideCloud();
+	//createVoxelGrid();
+	//subdivideCloud();
+	test();
 }
 
 ProceduralGenerator::~ProceduralGenerator()
@@ -237,4 +240,35 @@ void ProceduralGenerator::saveTextureMap()
 	}
 	Image* image = new Image(pixels->data(), axisSubdivision[0], axisSubdivision[1], 4);
 	image->saveImage("texturemap.png");
+}
+
+void ProceduralGenerator::test()
+{
+	tinynurbs::RationalSurface<float> srf;
+	srf.degree_u = 3;
+	srf.degree_v = 3;
+	srf.knots_u = { 0, 0, 0, 0, 1, 1, 1, 1 };
+	srf.knots_v = { 0, 0, 0, 0, 1, 1, 1, 1 };
+
+	// 2D array of control points using tinynurbs::array2<T> container
+	// Example from geometrictools.com/Documentation/NURBSCircleSphere.pdf
+	srf.control_points = { 4, 4,
+						  {glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1),
+						   glm::vec3(2, 0, 1), glm::vec3(2, 4, 1),  glm::vec3(-2, 4, 1),  glm::vec3(-2, 0, 1),
+						   glm::vec3(2, 0, -1), glm::vec3(2, 4, -1), glm::vec3(-2, 4, -1), glm::vec3(-2, 0, -1),
+						   glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1)
+						  }
+	};
+	srf.weights = { 4, 4,
+				   {1,       1.f / 3.f, 1.f / 3.f, 1,
+				   1.f / 3.f, 1.f / 9.f, 1.f / 9.f, 1.f / 3.f,
+				   1.f / 3.f, 1.f / 9.f, 1.f / 9.f, 1.f / 3.f,
+				   1,       1.f / 3.f, 1.f / 3.f, 1
+				   }
+	};
+
+	glm::vec3 a = tinynurbs::surfacePoint(srf, 2.5f, 2.5f);
+	std::cout << a.x << std::endl;
+	std::cout << a.y << std::endl;
+	std::cout << a.z << std::endl;
 }

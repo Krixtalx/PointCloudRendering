@@ -25,6 +25,7 @@ protected:
 	void subdivideCloud();
 	void saveHeightMap();
 	void saveTextureMap();
+	void test();
 
 public:
 	~ProceduralGenerator();
