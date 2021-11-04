@@ -34,7 +34,7 @@ bool PointCloudScene::loadPointCloud(const std::string& path, const bool& aggreg
 {
 	bool nullPointCloud = _pointCloud == nullptr;
 	PointCloud* aux = _pointCloud;
-	if (!aggregate) {
+	if (!aggregate && !nullPointCloud) {
 		delete _pointCloud;
 	}
 	_pointCloud = new PointCloud(path, true);
@@ -55,8 +55,8 @@ bool PointCloudScene::loadPointCloud(const std::string& path, const bool& aggreg
 		_pointCloud->setVAOData();
 		delete aux;
 	}
-	if (nullPointCloud)
-		this->_sceneGroup->emptyScene();
+
+	this->_sceneGroup->emptyScene();
 	this->_sceneGroup->addComponent(_pointCloud);
 	ProceduralGenerator::getInstance()->setCurrentCloudScene(this);
 
