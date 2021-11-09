@@ -3,7 +3,11 @@
 #include <omp.h>
 #include "tinynurbs.h"
 
-
+/**
+ * @brief Set the pointCloudScene passed by parameters as the current pointCloudScene of the generator
+ * deleting all previous work(if any) and redoing all the process from the start
+ * @param pointCloudScene New pointCloudScene
+*/
 void ProceduralGenerator::setCurrentCloudScene(PointCloudScene* pointCloudScene)
 {
 	for (size_t x = 0; x < axisSubdivision[0]; x++)
@@ -21,8 +25,8 @@ void ProceduralGenerator::setCurrentCloudScene(PointCloudScene* pointCloudScene)
 	calculateCloudDensity();
 
 	readParameters("proceduralParameters.ini");
-	//createVoxelGrid();
-	//subdivideCloud();
+	createVoxelGrid();
+	subdivideCloud();
 	test();
 }
 
@@ -40,6 +44,9 @@ ProceduralGenerator::~ProceduralGenerator()
 	}
 }
 
+/**
+ * @brief Compute the cloud density
+*/
 void ProceduralGenerator::calculateCloudDensity()
 {
 	if (_pointCloudScene) {
@@ -53,6 +60,10 @@ void ProceduralGenerator::calculateCloudDensity()
 	}
 }
 
+/**
+ * @brief Read the parameters from the parameters file
+ * @param path where the parameters file is
+*/
 void ProceduralGenerator::readParameters(const std::string& path)
 {
 	std::ifstream parametersFile;
@@ -86,6 +97,42 @@ void ProceduralGenerator::readParameters(const std::string& path)
 	}
 }
 
+/**
+ * @brief compute the height of a proceduralVoxel as the mean of the inmediate neightbour
+ * @param x index of the subdivision
+ * @param y index of the subdivision
+*/
+void ProceduralGenerator::meanHeight(unsigned x, unsigned y)
+{
+	float mean = 0;
+	char counter = 0;
+	int auxX, auxY;
+	for (int i = -1; i < 2; i++)
+	{
+		for (int j = -1; j < 2; j++)
+		{
+			auxX = x + i;
+			auxX = std::min((int)axisSubdivision[0] - 1, std::max(0, auxX));
+			auxY = y + j;
+			auxY = std::min((int)axisSubdivision[1] - 1, std::max(0, auxY));
+			if (auxX != x || auxY != y) {
+				counter++;
+				float height = subdivisions[auxX][auxY][0]->getHeight();
+				if (height != FLT_MAX)
+					mean += height;
+				else
+					counter--;
+			}
+		}
+	}
+	if (counter > 0)
+		mean /= counter;
+	subdivisions[x][y][0]->setHeight(mean);
+}
+
+/**
+ * @brief Initialize the voxel grid 
+*/
 void ProceduralGenerator::createVoxelGrid()
 {
 	vec3 size = _pointCloudScene->_pointCloud->getAABB().size();
@@ -128,6 +175,9 @@ void ProceduralGenerator::createVoxelGrid()
 	}
 }
 
+/**
+ * @brief Assign each point of the PointCloud to the corresponding voxel in the voxel grid
+*/
 void ProceduralGenerator::subdivideCloud()
 {
 	unsigned startPoint[3];
@@ -189,6 +239,9 @@ void ProceduralGenerator::subdivideCloud()
 	saveTextureMap();
 }
 
+/**
+ * @brief Saves the current voxel grid as a png file in gray scale that represents a height map
+*/
 void ProceduralGenerator::saveHeightMap()
 {
 	float minPointZ = _pointCloudScene->_pointCloud->getAABB().min()[2];
@@ -219,6 +272,9 @@ void ProceduralGenerator::saveHeightMap()
 	image->saveImage("heightmap.png");
 }
 
+/**
+ * @brief Saves the current voxel grid as a png file in RGB scale that could be used as a texture of the terrain
+*/
 void ProceduralGenerator::saveTextureMap()
 {
 	float minPointZ = _pointCloudScene->_pointCloud->getAABB().min()[2];
@@ -244,31 +300,40 @@ void ProceduralGenerator::saveTextureMap()
 
 void ProceduralGenerator::test()
 {
-	tinynurbs::RationalSurface<float> srf;
+	tinynurbs::Surface<float> srf;
 	srf.degree_u = 3;
 	srf.degree_v = 3;
-	srf.knots_u = { 0, 0, 0, 0, 1, 1, 1, 1 };
-	srf.knots_v = { 0, 0, 0, 0, 1, 1, 1, 1 };
+	srf.knots_u.resize(axisSubdivision[0]);
+	srf.knots_v.resize(axisSubdivision[1]);
+	std::iota(srf.knots_u.begin(), srf.knots_u.end(), 0);
+	std::iota(srf.knots_v.begin(), srf.knots_v.end(), 0);
 
-	// 2D array of control points using tinynurbs::array2<T> container
-	// Example from geometrictools.com/Documentation/NURBSCircleSphere.pdf
-	srf.control_points = { 4, 4,
-						  {glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1),
-						   glm::vec3(2, 0, 1), glm::vec3(2, 4, 1),  glm::vec3(-2, 4, 1),  glm::vec3(-2, 0, 1),
-						   glm::vec3(2, 0, -1), glm::vec3(2, 4, -1), glm::vec3(-2, 4, -1), glm::vec3(-2, 0, -1),
-						   glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1), glm::vec3(0, 0, -1)
-						  }
-	};
-	srf.weights = { 4, 4,
-				   {1,       1.f / 3.f, 1.f / 3.f, 1,
-				   1.f / 3.f, 1.f / 9.f, 1.f / 9.f, 1.f / 3.f,
-				   1.f / 3.f, 1.f / 9.f, 1.f / 9.f, 1.f / 3.f,
-				   1,       1.f / 3.f, 1.f / 3.f, 1
-				   }
-	};
+	std::vector<glm::vec3> vec;
+	for (size_t x = 0; x < axisSubdivision[0]; x++)
+	{
+		for (size_t y = 0; y < axisSubdivision[1]; y++)
+		{
+			glm::vec3 aux = subdivisions[x][y][0]->getMidPoint();
+			if (aux[2] == FLT_MAX)
+				meanHeight(x, y);
+			aux = subdivisions[x][y][0]->getMidPoint();
+			vec.push_back(aux);
+		}
+	}
 
-	glm::vec3 a = tinynurbs::surfacePoint(srf, 2.5f, 2.5f);
-	std::cout << a.x << std::endl;
-	std::cout << a.y << std::endl;
-	std::cout << a.z << std::endl;
+	srf.control_points = { axisSubdivision[0], axisSubdivision[1], vec };
+
+	for (size_t x = 0; x < axisSubdivision[0]; x++)
+	{
+		for (size_t y = 0; y < axisSubdivision[1]; y++)
+		{
+			glm::vec3 aux = subdivisions[x][y][0]->getMidPoint();
+			if (aux[2] == FLT_MAX)
+				meanHeight(x, y);
+			aux = subdivisions[x][y][0]->getMidPoint();
+			vec.push_back(aux);
+		}
+	}
+	
+	this->_pointCloudScene->_pointCloud->setVAOData();
 }

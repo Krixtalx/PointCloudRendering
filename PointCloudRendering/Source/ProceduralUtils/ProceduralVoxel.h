@@ -37,7 +37,11 @@ public:
 
 	bool load(const mat4& modelMatrix);
 
+	void setHeight(float h);
+
 	float getHeight();
+
+	glm::vec3 getMidPoint();
 
 	glm::vec3 getColor();
 };

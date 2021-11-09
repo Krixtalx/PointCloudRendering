@@ -34,6 +34,7 @@ void ProceduralVoxel::setAABB(AABB* aabb)
 	this->aabb = aabb;
 	if (drawAABB)
 		delete drawAABB;
+	drawAABB = nullptr;
 }
 
 void ProceduralVoxel::setProcedural(bool proc)
@@ -53,16 +54,10 @@ void ProceduralVoxel::computeHeight()
 		}
 
 		height /= size;
-		/*PointCloud::PointModel point;
-		point._point = aabb->center();
-		point._point[2] = height;
-		point.saveRGB(glm::vec3(1, 0, 0));
-		points->push_back(point);*/
 	}
 	else {
 		height = FLT_MAX;
 	}
-	//std::cout << height << std::endl;
 }
 
 void ProceduralVoxel::computeColor()
@@ -109,9 +104,21 @@ bool ProceduralVoxel::load(const mat4& modelMatrix)
 	return true;
 }
 
+void ProceduralVoxel::setHeight(float h)
+{
+	height = h;
+}
+
 float ProceduralVoxel::getHeight()
 {
 	return height;
+}
+
+glm::vec3 ProceduralVoxel::getMidPoint()
+{
+	glm::vec3 aux = aabb->center();
+	aux[2] = height;
+	return aux;
 }
 
 glm::vec3 ProceduralVoxel::getColor()

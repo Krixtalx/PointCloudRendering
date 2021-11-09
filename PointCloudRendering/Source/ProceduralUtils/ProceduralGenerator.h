@@ -21,6 +21,7 @@ protected:
 	ProceduralGenerator() = default;
 	void calculateCloudDensity();
 	void readParameters(const std::string & path);
+	void meanHeight(unsigned x, unsigned y);
 	void createVoxelGrid();
 	void subdivideCloud();
 	void saveHeightMap();

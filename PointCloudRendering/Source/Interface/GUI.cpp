@@ -51,6 +51,12 @@ void GUI::createMenu()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu(ICON_FA_SITEMAP "Procedural Options"))
+		{
+			ImGui::MenuItem(ICON_FA_INFO "About the project", NULL, &_showAboutUs);
+			ImGui::EndMenu();
+		}
+
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(io.DisplaySize.x - 125);
 		this->renderHelpMarker("Avoids some movements to also modify the camera parameters");
