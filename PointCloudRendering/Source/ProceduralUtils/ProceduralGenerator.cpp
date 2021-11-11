@@ -22,6 +22,9 @@ void ProceduralGenerator::setCurrentCloudScene(PointCloudScene* pointCloudScene)
 	}
 
 	this->_pointCloudScene = pointCloudScene;
+	pointClouds[0] = pointCloudScene->_pointCloud;
+	pointClouds[1] = new PointCloud();
+	_pointCloudScene->_sceneGroup->addComponent(pointClouds[1]);
 	calculateCloudDensity();
 
 	readParameters("proceduralParameters.ini");
@@ -125,13 +128,15 @@ void ProceduralGenerator::meanHeight(unsigned x, unsigned y)
 			}
 		}
 	}
-	if (counter > 0)
+	if (counter > 0) {
 		mean /= counter;
-	subdivisions[x][y][0]->setHeight(mean);
+		subdivisions[x][y][0]->setHeight(mean);
+	}
 }
 
+
 /**
- * @brief Initialize the voxel grid 
+ * @brief Initialize the voxel grid
 */
 void ProceduralGenerator::createVoxelGrid()
 {
@@ -204,7 +209,7 @@ void ProceduralGenerator::subdivideCloud()
 	xOffset = (axisSubdivision[0] - axisSubdivisionOriginal[0]) / 2;
 	yOffset = (axisSubdivision[1] - axisSubdivisionOriginal[1]) / 2;
 	zOffset = (axisSubdivision[2] - axisSubdivisionOriginal[2]) / 2;
-	for (unsigned i = 0; i < points->size(); i++)
+	for (int i = 0; i < points->size(); i++)
 	{
 		relativePoint = (*points)[i]._point - minPoint;
 		x = floor(relativePoint[0] / stride[0]) + xOffset;
@@ -216,7 +221,6 @@ void ProceduralGenerator::subdivideCloud()
 			y--;
 		if (z == axisSubdivisionOriginal[2] + zOffset)
 			z--;
-
 		subdivisions[x][y][z]->addPoint(i);
 	}
 
@@ -301,17 +305,17 @@ void ProceduralGenerator::saveTextureMap()
 void ProceduralGenerator::test()
 {
 	tinynurbs::Surface<float> srf;
-	srf.degree_u = 3;
-	srf.degree_v = 3;
-	srf.knots_u.resize(axisSubdivision[0]);
-	srf.knots_v.resize(axisSubdivision[1]);
+	srf.degree_u = 5;
+	srf.degree_v = 5;
+	srf.knots_u.resize(axisSubdivision[0] + srf.degree_u + 1);
+	srf.knots_v.resize(axisSubdivision[1] + srf.degree_v + 1);
 	std::iota(srf.knots_u.begin(), srf.knots_u.end(), 0);
 	std::iota(srf.knots_v.begin(), srf.knots_v.end(), 0);
 
 	std::vector<glm::vec3> vec;
-	for (size_t x = 0; x < axisSubdivision[0]; x++)
+	for (int x = 0; x < axisSubdivision[0]; x++)
 	{
-		for (size_t y = 0; y < axisSubdivision[1]; y++)
+		for (int y = 0; y < axisSubdivision[1]; y++)
 		{
 			glm::vec3 aux = subdivisions[x][y][0]->getMidPoint();
 			if (aux[2] == FLT_MAX)
@@ -322,18 +326,24 @@ void ProceduralGenerator::test()
 	}
 
 	srf.control_points = { axisSubdivision[0], axisSubdivision[1], vec };
-
-	for (size_t x = 0; x < axisSubdivision[0]; x++)
-	{
-		for (size_t y = 0; y < axisSubdivision[1]; y++)
+	if (tinynurbs::surfaceIsValid(srf)) {
+		glm::vec3 minPoint = pointClouds[0]->getAABB().min();
+		glm::vec3 maxPoint = pointClouds[0]->getAABB().max();
+		PointCloud::PointModel point;
+#pragma omp parallel for private(point)
+		for (int x = 0; x < axisSubdivision[0] * 5; x++)
 		{
-			glm::vec3 aux = subdivisions[x][y][0]->getMidPoint();
-			if (aux[2] == FLT_MAX)
-				meanHeight(x, y);
-			aux = subdivisions[x][y][0]->getMidPoint();
-			vec.push_back(aux);
+			for (int y = 0; y < axisSubdivision[1] * 5; y++)
+			{
+				point._point = tinynurbs::surfacePoint(srf, x * 0.2f, y * 0.2f);
+				point.saveRGB(subdivisions[floor(x / 5)][floor(y / 5)][0]->getColor());
+
+#pragma omp critical
+				pointClouds[1]->_points.push_back(point);
+
+			}
 		}
+
+		this->pointClouds[1]->setVAOData();
 	}
-	
-	this->_pointCloudScene->_pointCloud->setVAOData();
 }
